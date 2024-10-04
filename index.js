@@ -11,9 +11,7 @@ import dotenv from "dotenv"; // Import dotenv
 dotenv.config();
 
 const app = express();
-app.use(cors({
-  origin: 'http://localhost:3000', // Change this to your frontend URL when deployed
-}));
+app.use(cors());
 app.use(express.json());
 
 // Connect to MongoDB using the environment variable
