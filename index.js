@@ -11,7 +11,7 @@ import dotenv from "dotenv"; // Import dotenv
 dotenv.config();
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: "http://localhost:3000/GateOrganizer#/" }));
 app.use(express.json());
 
 // Connect to MongoDB using the environment variable
