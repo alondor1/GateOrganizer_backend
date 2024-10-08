@@ -5,13 +5,13 @@ import bcrypt from "bcrypt";
 import UserModel from "./models/UserData.js";
 import EntryModel from "./models/EntryData.js";
 import HistoryModel from "./models/HistoryData.js";
-import dotenv from "dotenv"; // Import dotenv
+import dotenv from "dotenv";
 
 // Load environment variables from .env file
 dotenv.config();
 
 const app = express();
-app.use(cors({ origin: "http://localhost:3000/GateOrganizer#/" }));
+app.use(cors());
 app.use(express.json());
 
 // Connect to MongoDB using the environment variable
@@ -41,6 +41,19 @@ app
       res.status(500).json({ error: err.message });
     }
   });
+
+app.delete("/getUsers/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deletedUser = await UserModel.findByIdAndDelete(id);
+    if (!deletedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json({ message: "User deleted successfully", deletedUser });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // Entry routes
 app
@@ -75,22 +88,23 @@ app.delete("/getEntrys/:_id", async (req, res) => {
 });
 
 // History routes
-app.get("/getHistory", (req, res) => {
-  HistoryModel.find()
-    .then((history) => res.json(history))
-    .catch((err) => res.status(500).json({ error: err.message }));
-});
-
-app.post("/getHistories", async (req, res) => {
-  const newHistory = new HistoryModel(req.body);
-  console.log("Creating new history:", newHistory);
-  try {
-    const savedHistory = await newHistory.save();
-    res.status(201).json(savedHistory);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+app
+  .route("/getHistory")
+  .get((req, res) => {
+    HistoryModel.find()
+      .then((history) => res.json(history))
+      .catch((err) => res.status(500).json({ error: err.message }));
+  })
+  .post(async (req, res) => {
+    const newHistory = new HistoryModel(req.body);
+    console.log("Creating new history:", newHistory);
+    try {
+      const savedHistory = await newHistory.save();
+      res.status(201).json(savedHistory);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
 
 // Update entry status
 app.put("/getEntrys/:id", async (req, res) => {
@@ -114,6 +128,7 @@ app.put("/getEntrys/:id", async (req, res) => {
 // Login route
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
+  console.log("new login: " + req.body.email);
   try {
     const user = await UserModel.findOne({ email });
     if (!user) {
