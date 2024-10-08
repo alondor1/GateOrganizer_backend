@@ -16,7 +16,7 @@ app.use(express.json());
 // CORS configuration
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://gateorganizer-frontend.onrender.com",
+  "https://gateorganizer.onrender.com",
 ]; // Add your production URL here
 app.use(
   cors({
