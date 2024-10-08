@@ -14,18 +14,24 @@ const app = express();
 app.use(express.json());
 
 // CORS configuration
-const allowedOrigins = ['http://localhost:3000', 'https://gateorganizer-frontend.onrender.com']; // Add your production URL here
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const message = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(message), false);
-    }
-    return callback(null, true);
-  }
-}));
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://gateorganizer-frontend.onrender.com",
+]; // Add your production URL here
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        const message =
+          "The CORS policy for this site does not allow access from the specified Origin.";
+        return callback(new Error(message), false);
+      }
+      return callback(null, true);
+    },
+  })
+);
 
 // Connect to MongoDB using the environment variable
 mongoose
@@ -168,3 +174,6 @@ app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
 });
 
+app.get("/", (req, res) => {
+  res.send(" server is running!");
+});
