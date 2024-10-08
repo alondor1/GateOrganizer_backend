@@ -11,14 +11,28 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-app.use(cors());
 app.use(express.json());
+
+// CORS configuration
+const allowedOrigins = ['http://localhost:3000', 'https://gateorganizer-frontend.onrender.com']; // Add your production URL here
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const message = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(message), false);
+    }
+    return callback(null, true);
+  }
+}));
 
 // Connect to MongoDB using the environment variable
 mongoose
   .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 20000,
   })
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
@@ -153,3 +167,4 @@ app.post("/login", async (req, res) => {
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
 });
+
