@@ -20,6 +20,8 @@ const UserSchema = new mongoose.Schema({
   lastname: { type: String, required: true },
   accesskey: { type: String, required: true },
   role: { type: String, required: true },
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
 }); // Adds createdAt and updatedAt fields
 
 // Pre-save middleware to hash password
